@@ -11,6 +11,7 @@ from models.unet import EncoderUNetModel
 from sampling.sampling_utils import get_models_functions, estimate_counterfactual
 from torch.utils.data import DataLoader
 from custom_datasets.MNIST import MNISTDataset
+import pickle
 
 
 # Data
@@ -24,7 +25,7 @@ random_seed = 42
 
 
 # Scorer model path
-scorer_output_path = "/tmp/openai-2022-12-04-15-14-29-426217"
+scorer_output_path = "/tmp/openai-2022-12-04-15-49-49-747597"
 scorer_model_name = "model000000.pt"
 scorer_model_path = os.path.join(scorer_output_path, scorer_model_name)
 
@@ -38,7 +39,7 @@ classifier_scale = 1.0
 
 
 # UNET Config (scorer model)
-image_size = 128  # the target image resolution # Not used in UNetModel
+image_size = 28  # the target image resolution # Not used in UNetModel
 in_channels = 1  # the number of input channels, 3 for RGB images
 model_channels = 32
 out_channels = 1  # the number of output channels
@@ -110,7 +111,6 @@ diffusion = create_gaussian_diffusion()
 
 
 # Classifier EncoderUNET Config
-# image_size = 128  # the target image resolution
 in_channels = 1  # the number of input channels, 3 for RGB images
 model_channels = 32  # Classifier width
 out_channels = 10  # the number of output channels  # 10 for MNIST
@@ -162,6 +162,9 @@ sampling_eta = 0.0
 sampling_clip_denoised = True
 sampling_progression_ratio = 0.75
 sampling_reconstruction = True
+sampling_num_samples = 100
+sampling_batch_size = 100
+sampling_output_path = "refactored_model_output/sampling_results"
 
 
 ## Scorer
@@ -240,8 +243,21 @@ for i, data_dict in enumerate(test_generator_loader):
         "counterfactual_sample": counterfactual_image.cpu().numpy(),
     }
 
+    if sampling_progress:
+        results_per_sample.update({"diffusion_process": sampling_progression})
+
+    all_results.append(results_per_sample)
+    all_results = {k: [dic[k] for dic in all_results] for k in all_results[0]}
+
     # diffusion, cond_fn, model_fn,
     # model_classifier_free_fn, denoised_fn,
     # data_dict)
+
+    out_path = os.path.join(sampling_output_path, "samples.pickle")
+    with open(out_path, 'wb') as handle:
+        pickle.dump(all_results, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # with open(out_path, 'rb') as handle:
+    #     b = pickle.load(handle)
 
     pass

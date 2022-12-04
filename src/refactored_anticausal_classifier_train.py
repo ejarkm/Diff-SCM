@@ -12,7 +12,7 @@ from tqdm import tqdm
 from custom_datasets.MNIST import MNISTDataset
 
 # UNET Config
-image_size = 128  # the target image resolution
+image_size = 28  # the target image resolution
 in_channels = 1  # the number of input channels, 3 for RGB images
 model_channels = 32  # Classifier width
 out_channels = 10  # the number of output channels  # 10 for MNIST

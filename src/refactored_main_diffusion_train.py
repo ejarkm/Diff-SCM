@@ -14,7 +14,7 @@ from custom_datasets.MNIST import MNISTDataset
 
 
 # UNET Config
-image_size = 128  # the target image resolution # Not used in UNetModel
+image_size = 28  # the target image resolution # Not used in UNetModel
 in_channels = 1  # the number of input channels, 3 for RGB images
 model_channels = 32
 out_channels = 1  # the number of output channels
